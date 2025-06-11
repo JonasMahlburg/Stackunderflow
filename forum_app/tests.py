@@ -1,7 +1,8 @@
 from django.urls import reverse
 from django.contrib.auth.models import User
-from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
+from rest_framework.test import APITestCase, APIClient
+from rest_framework.authtoken.models import Token
 from .models import Question
 from .api.serializers import QuestionSerializer
 
@@ -24,8 +25,15 @@ class QuestionTest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='testpassword')
         self.question = Question.objects.create(title='Test Question', content='Test Content', author=self.user, category='frontend')
+        
+        # Login via username & password
+        # self.client = APIClient()
+        # self.client.login(username='testuser', password='testpassword')
+
+       # Login via token
+        self.token = Token.objects.create(user= self.user)
         self.client = APIClient()
-        self.client.login(username='testuser', password='testpassword')
+        self.client.credentials(HTTP_AUTHORIZATION= 'Token ' + self.token.key)
 
     def test_list_post_question(self):
         url = reverse('question-list')
@@ -38,7 +46,7 @@ class QuestionTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     
-    
+
     def test_detail_question(self):
         url = reverse('question-detail', kwargs={'pk': self.question.id})
         response = self.client.get(url)
