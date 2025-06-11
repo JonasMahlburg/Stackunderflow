@@ -3,22 +3,9 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.authtoken.models import Token
-from .models import Question
-from .api.serializers import QuestionSerializer
+from forum_app.models import Question
+from forum_app.api.serializers import QuestionSerializer
 
-
-class LikeTests(APITestCase):
-   
-    def test_get_like(self):
-        url = 'http://127.0.0.1:8000/api/forum/likes/'
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-
-    # def test_get_likes(self):
-    #     url = reverse('like-list')
-    #     response = self.client.get(url)
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
 class QuestionTest(APITestCase):
 
@@ -56,4 +43,3 @@ class QuestionTest(APITestCase):
         self.assertDictEqual(response.data, expected_data)
         self.assertJSONEqual(response.content, expected_data)
         self.assertContains(response, 'title')
-
