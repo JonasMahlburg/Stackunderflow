@@ -32,7 +32,6 @@ class LikeTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-
     def test_like_is_created(self):
         question = self.create_question()
         response = self.post_like(question)
