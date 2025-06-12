@@ -4,6 +4,7 @@ from forum_app.models import Like, Question, Answer
 from .serializers import QuestionSerializer, AnswerSerializer, LikeSerializer
 from .permissions import IsOwnerOrAdmin, CustomQuestionPermission
 from .throttling import QuestionThrottle, QuestionGetThrottle, QuestionPostThrottle
+from django_filters.rest_framework import DjangoFilterBackend
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
@@ -31,22 +32,24 @@ class AnswerListCreateView(generics.ListCreateAPIView):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['author__username', 'content']
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def get_queryset(self):
-        queryset = Answer.objects.all()
+    # def get_queryset(self):
+    #     queryset = Answer.objects.all()
 
-        content_param = self.request.query_params.get('content', None)
-        if  content_param is not None:
-                queryset = queryset.filter(content__icontains=content_param)
+    #     content_param = self.request.query_params.get('content', None)
+    #     if  content_param is not None:
+    #             queryset = queryset.filter(content__icontains=content_param)
         
-        username_param = self.request.query_params.get('author', None)
-        if  username_param is not None:
-                queryset = queryset.filter(author__username=username_param)
+    #     username_param = self.request.query_params.get('author', None)
+    #     if  username_param is not None:
+    #             queryset = queryset.filter(author__username=username_param)
         
-        return queryset
+    #     return queryset
     
 
 class AnswerDetailView(generics.RetrieveUpdateDestroyAPIView):
